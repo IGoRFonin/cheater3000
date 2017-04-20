@@ -1,0 +1,11 @@
+{
+  "name": "electron",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "electron-packager ./ cheat --electronVersion=1.6.2"
+  },
+  "author": "",
+  "license": "ISC"
+}
