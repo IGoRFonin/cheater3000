@@ -2,6 +2,7 @@
 const electron = require('electron')
 const exec = require('child_process').exec
 const fs = require('fs')
+const is_url = require('is-url')
 
 const app = electron.app
 
@@ -15,12 +16,18 @@ let confFile = __dirname + '/config.json';
 function createWindow () {
   const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize;
   mainWindow = new BrowserWindow({width: width, height: height})
-  console.log(__dirname);
+
   if (fs.existsSync(confFile)) {
     loadBitrix(mainWindow);
   } else {
     loadConfigPage(mainWindow);
   }
+  mainWindow.on('show', function() {
+    console.log('ready')
+    var menuCode = fs.readFileSync(__dirname + '/js/menuPage.js');
+    const cts = mainWindow.webContents;
+    let dom = cts.executeJavaScript(menuCode.toString());
+  })
 }
 
 app.on('ready', createWindow)
@@ -43,6 +50,9 @@ function loadBitrix(win) {
       user,
       pass
     } = require(confFile);
+    
+    if(!is_url(link))
+      return loadConfigPage(win);
 
     win.loadURL(link,
       {userAgent: 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36'})
@@ -51,6 +61,7 @@ function loadBitrix(win) {
     win.on('closed', function () {
       win = null
     });
+    require('./menu')
     const cts = mainWindow.webContents;
 
     cts.on('dom-ready', function() {
@@ -76,15 +87,14 @@ function loadConfigPage(win) {
   win.on('closed', function () {
     win = null
   })
+  require('./menu')
   const cts = mainWindow.webContents;
   cts.on('dom-ready', function() {
     var configCode = fs.readFileSync(__dirname + '/js/configPage.js');
     let itog = cts.executeJavaScript(configCode.toString());
     itog.then(result => {
-      console.log(result);
       fs.writeFile(confFile, result, (err) => {
-        if (err) throw err;
-        console.log('The file has been saved!');
+        return loadBitrix(win);
       });
     })
   });

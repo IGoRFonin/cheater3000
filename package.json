@@ -7,5 +7,8 @@
     "build": "electron-packager ./ cheat --electronVersion=1.6.2"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "is-url": "^1.2.2"
+  }
 }
