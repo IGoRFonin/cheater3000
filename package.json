@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "electron-packager ./ cheat --electronVersion=1.6.2"
+    "build": "electron-packager ./ cheat --electronVersion=1.6.2 --overwrite"
   },
   "author": "",
   "license": "ISC"
